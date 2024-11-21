@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Head } from "../../../components/seo/head";
 import { gql, useMutation } from "@apollo/client";
 import { ADD_BOOK } from "../../../gql/queries";
+import { useNotificationDispatch } from "../../../contexts/notification";
+import { createErrorOptions } from "../../../utils/notify-options-creator";
 
 export const AddBook = () => {
   const [title, setTitle] = useState("");
@@ -9,7 +11,9 @@ export const AddBook = () => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
-  const [addBook, result] = useMutation(ADD_BOOK, {
+  const notify = useNotificationDispatch();
+
+  const [addBook, { loading }] = useMutation(ADD_BOOK, {
     update: (cache, { data: { addBook: returnedBook } }) => {
       cache.modify({
         fields: {
@@ -45,12 +49,23 @@ export const AddBook = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (genres.length < 1) {
+      alert("Please fill out at least one genre");
+      return;
+    }
+
     addBook({
       variables: {
         title,
         author,
         published,
         genres,
+      },
+      onCompleted: (result) => {
+        notify({ message: `Successfully added book ${result.addBook.title}` });
+      },
+      onError: (error) => {
+        notify(createErrorOptions(error));
       },
     });
 
@@ -71,6 +86,7 @@ export const AddBook = () => {
             <label>
               title
               <input
+                required
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -81,6 +97,7 @@ export const AddBook = () => {
             <label>
               author
               <input
+                required
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
@@ -91,9 +108,10 @@ export const AddBook = () => {
             <label>
               published
               <input
+                required
                 value={published}
-                type="text"
-                onChange={(e) => setPublished(e.target.value)}
+                type="number"
+                onChange={(e) => setPublished(Number(e.target.value))}
               />
             </label>
           </div>
@@ -115,7 +133,11 @@ export const AddBook = () => {
               <p>genre list: {genres.join(", ")}</p>
             </label>
           </div>
-          <button>submit</button>
+          {loading ? (
+            <button disabled>saving...</button>
+          ) : (
+            <button>submit</button>
+          )}
         </form>
       </div>
     </>

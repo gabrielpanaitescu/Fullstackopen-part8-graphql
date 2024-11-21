@@ -2,25 +2,28 @@ import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { UPDATE_AUTHOR } from "../../gql/queries";
 import Select from "react-select";
+import { useNotificationDispatch } from "../../contexts/notification";
+import { createErrorOptions } from "../../utils/notify-options-creator";
 
 export const UpdateAuthor = ({ authors }) => {
   const [name, setName] = useState(null);
   const [year, setYear] = useState("");
-  const [updateAuthor, result] = useMutation(UPDATE_AUTHOR);
+  const [updateAuthor] = useMutation(UPDATE_AUTHOR);
+  const notify = useNotificationDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log(name);
 
     updateAuthor({
       variables: {
         name: name.value,
         year,
       },
+      onError: (error) => {
+        notify(createErrorOptions(error));
+      },
     });
 
-    setName("");
     setYear("");
   };
 
@@ -34,38 +37,33 @@ export const UpdateAuthor = ({ authors }) => {
   return (
     <div>
       <h3>Set Birth Year</h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ maxWidth: "300px" }}>
         <Select
-          defaultValue={name}
           onChange={setName}
           options={options}
           placeholder="Choose author"
           required
+          styles={{
+            control: (baseStyles) => {
+              return {
+                ...baseStyles,
+                backgroundColor: "#121212",
+              };
+            },
+            option: (baseStyles, state) => {
+              return {
+                ...baseStyles,
+                backgroundColor: state.isFocused ? "#f0f0f0" : "#121212",
+                color: state.isFocused ? "#121212" : "#f0f0f0",
+              };
+            },
+          }}
         />
-
-        {/* <div>
-          <label>
-            name
-            <select
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            >
-              <option disabled value="">
-                Choose author
-              </option>
-              {authors.map((author) => (
-                <option key={author.id} value={author.name}>
-                  {author.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div> */}
         <div>
           <label>
             born
             <input
+              required
               value={year}
               onChange={(e) => setYear(parseInt(e.target.value))}
               type="number"
