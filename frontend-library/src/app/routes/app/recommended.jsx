@@ -30,6 +30,8 @@ export const recommendedLoader = (apolloClient) => async () => {
     fetchPolicy: "network-only",
   });
 
+  if (!fetchedUser.data?.me) return null;
+
   const favoriteGenre = fetchedUser.data.me.favoriteGenre;
 
   return await apolloClient.query({
@@ -39,11 +41,9 @@ export const recommendedLoader = (apolloClient) => async () => {
 };
 
 export const Recommended = () => {
-  const { data: userData, loading: userLoading } = useQuery(CURRENT_USER, {
-    fetchPolicy: "cache-first",
-  });
+  const { data: userData, loading: userLoading } = useQuery(CURRENT_USER);
 
-  const favoriteGenre = userData.me.favoriteGenre;
+  const favoriteGenre = userData.me ? userData.me.favoriteGenre : null;
 
   const { data: booksData, loading: booksLoading } = useQuery(GET_BOOKS, {
     variables: favoriteGenre && { genre: favoriteGenre },

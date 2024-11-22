@@ -1,5 +1,11 @@
 import { gql } from "@apollo/client";
 
+export const GET_GENRE_LIST = gql`
+  query GetGenreList {
+    genreList
+  }
+`;
+
 export const SET_FAVORITE_GENRE = gql`
   mutation SetFavoriteGenre($genre: String!) {
     setFavoriteGenre(genre: $genre) {
@@ -68,8 +74,8 @@ export const GET_AUTHORS = gql`
 `;
 
 export const GET_BOOKS = gql`
-  query GetBooks($author: String, $genre: String) {
-    allBooks(author: $author, genre: $genre) {
+  query GetBooks($author: String, $genres: [String!]) {
+    allBooks(author: $author, genres: $genres) {
       genres
       title
       published

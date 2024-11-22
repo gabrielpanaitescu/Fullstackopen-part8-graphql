@@ -10,7 +10,6 @@ export const authorsLoader = (apolloClient) => async () => {
     cachedData ??
     (await apolloClient.query({
       query: GET_AUTHORS,
-      fetchPolicy: "cache-first",
     }))
   );
 };
