@@ -5,7 +5,7 @@ import {
   SET_FAVORITE_GENRE,
 } from "../../../gql/queries";
 import { Head } from "../../../components/seo/head";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BookList } from "../../../components/ui/book-list";
 import { useNotificationDispatch } from "../../../contexts/notification";
 import { default as Select, components } from "react-select";
@@ -32,13 +32,6 @@ export const booksLoader = (apolloClient) => async () => {
     booksData,
     genreListData,
   };
-
-  // return (
-  //   cachedBooks ??
-  //   (await apolloClient.query({
-  //     query: GET_BOOKS,
-  //   }))
-  // );
 };
 
 const FavoriteGenreSelect = () => {
