@@ -8,6 +8,10 @@ const userSchema = new Schema({
     minlength: 3,
   },
   passwordHash: String,
+  favoriteGenre: {
+    type: String,
+    min: 1,
+  },
 });
 
 export const User = model("User", userSchema);
