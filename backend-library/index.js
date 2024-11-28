@@ -13,6 +13,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { PubSub } from "graphql-subscriptions";
+import { loaders } from "./libs/loaders.js";
 
 mongoose.set("strictQuery", false);
 mongoose.set("debug", true);
@@ -61,7 +62,7 @@ app.use(
 
         const currentUser = await User.findById(decodedToken.id);
 
-        return { currentUser };
+        return { currentUser, loaders };
       }
     },
   })

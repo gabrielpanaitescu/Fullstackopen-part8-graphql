@@ -19,7 +19,7 @@ export const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),
     allBooks: async (_, { author, genres }) => {
       if (author && genres) {
-        return await Book.aggregate([
+        return Book.aggregate([
           {
             $match: { genres: { $all: genres } },
           },
@@ -39,9 +39,9 @@ export const resolvers = {
           },
         ]);
       } else if (genres) {
-        return await Book.find({ genres: { $all: genres } }).populate("author");
+        return Book.find({ genres: { $all: genres } }).populate("author");
       } else if (author) {
-        return await Book.aggregate([
+        return Book.aggregate([
           {
             $lookup: {
               from: "authors",
@@ -58,7 +58,32 @@ export const resolvers = {
           },
         ]);
       } else {
-        return await Book.find({}).populate("author");
+        // const books = await Book.find({});
+
+        // const authors = await Author.find({
+        //   _id: { $in: books.map((book) => book.author) },
+        // });
+
+        // const authorsById = {};
+
+        // authors.forEach((author) => {
+        //   authorsById[author.id] = author;
+        // });
+
+        // console.log("authorsById", authorsById);
+
+        // const booksWithAuthorPopulated = books.map((book) => {
+        //   console.log("book.author", book.author.toString());
+
+        //   return {
+        //     ...book._doc,
+        //     author: authorsById[book.author.toString()],
+        //   };
+        // });
+
+        // return booksWithAuthorPopulated;
+
+        return Book.find({}).populate("author");
       }
     },
     allAuthors: async () => Author.find({}),

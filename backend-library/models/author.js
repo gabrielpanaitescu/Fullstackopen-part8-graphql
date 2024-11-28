@@ -10,10 +10,6 @@ const authorSchema = new Schema({
     type: Number,
     min: 1,
   },
-  bookCount: {
-    type: Number,
-    min: 1,
-  },
 });
 
 export const Author = model("Author", authorSchema);

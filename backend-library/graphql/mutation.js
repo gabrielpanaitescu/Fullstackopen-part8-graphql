@@ -35,7 +35,7 @@ export const resolvers = {
       let newBook;
 
       if (!storedAuthor) {
-        const newAuthor = new Author({ name: author, bookCount: 1 });
+        const newAuthor = new Author({ name: author });
 
         try {
           await newAuthor.save();
@@ -51,23 +51,6 @@ export const resolvers = {
 
         newBook = new Book({ ...args, author: newAuthor._id });
       } else if (storedAuthor) {
-        storedAuthor.bookCount += 1;
-
-        try {
-          await storedAuthor.save();
-        } catch (error) {
-          throw new GraphQLError(
-            "Could not increment book count of saved author",
-            {
-              extensions: {
-                code: "BAD_USER_INPUT",
-                invalidArgs: args.title,
-                error,
-              },
-            }
-          );
-        }
-
         newBook = new Book({ ...args, author: storedAuthor._id });
       }
 
