@@ -13,14 +13,14 @@ export const recommendedLoader = (apolloClient) => async () => {
 
     const cachedBooks = apolloClient.readQuery({
       query: GET_BOOKS,
-      variables: favoriteGenre && { genre: favoriteGenre },
+      variables: favoriteGenre ? { genres: [favoriteGenre] } : null,
     });
 
     return (
       cachedBooks ??
       (await apolloClient.query({
         query: GET_BOOKS,
-        variables: favoriteGenre && { genre: favoriteGenre },
+        variables: favoriteGenre ? { genres: [favoriteGenre] } : null,
       }))
     );
   }
@@ -30,13 +30,13 @@ export const recommendedLoader = (apolloClient) => async () => {
     fetchPolicy: "network-only",
   });
 
-  if (!fetchedUser.data?.me) return null;
+  if (!fetchedUser.data) return null;
 
   const favoriteGenre = fetchedUser.data.me.favoriteGenre;
 
   return await apolloClient.query({
     query: GET_BOOKS,
-    variables: favoriteGenre && { genre: favoriteGenre },
+    variables: favoriteGenre && { genres: [favoriteGenre] },
   });
 };
 
@@ -46,7 +46,7 @@ export const Recommended = () => {
   const favoriteGenre = userData.me ? userData.me.favoriteGenre : null;
 
   const { data: booksData, loading: booksLoading } = useQuery(GET_BOOKS, {
-    variables: favoriteGenre && { genre: favoriteGenre },
+    variables: favoriteGenre ? { genres: [favoriteGenre] } : null,
   });
 
   if (userLoading || booksLoading) return <div>loading...</div>;

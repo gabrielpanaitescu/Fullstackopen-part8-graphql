@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Head } from "../../../components/seo/head";
 import { gql, useMutation } from "@apollo/client";
-import { ADD_BOOK } from "../../../gql/queries";
+import { ADD_BOOK, GET_BOOKS } from "../../../gql/queries";
 import { useNotificationDispatch } from "../../../contexts/notification";
 import { createErrorOptions } from "../../../utils/notify-options-creator";
+import { updateAllBooksCache } from "../../../utils/update-cache";
 
 export const AddBook = () => {
   const [title, setTitle] = useState("");
@@ -15,20 +16,22 @@ export const AddBook = () => {
 
   const [addBook, { loading }] = useMutation(ADD_BOOK, {
     update: (cache, { data: { addBook: returnedBook } }) => {
+      updateAllBooksCache(cache, returnedBook);
+
       cache.modify({
         fields: {
-          allBooks: (cachedData = []) => {
-            const bookRef = cache.writeFragment({
-              data: returnedBook,
-              fragment: gql`
-                fragment NewBook on Book {
-                  id
-                  __typename
-                }
-              `,
-            });
-            return [...cachedData, bookRef];
-          },
+          // allBooks: (cachedData = []) => {
+          //   const bookRef = cache.writeFragment({
+          //     data: returnedBook,
+          //     fragment: gql`
+          //       fragment NewBook on Book {
+          //         id
+          //         __typename
+          //       }
+          //     `,
+          //   });
+          //   return [...cachedData, bookRef];
+          // },
           allAuthors: (cachedData = []) => {
             const authorRef = cache.writeFragment({
               data: returnedBook.author,
@@ -54,12 +57,14 @@ export const AddBook = () => {
       return;
     }
 
+    const lowerCasedGenres = genres.map((genre) => genre.toLowerCase().trim());
+
     addBook({
       variables: {
         title,
         author,
         published,
-        genres,
+        genres: lowerCasedGenres,
       },
       onCompleted: (result) => {
         notify({ message: `Successfully added book ${result.addBook.title}` });

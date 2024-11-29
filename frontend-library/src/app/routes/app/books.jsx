@@ -117,11 +117,26 @@ export const Books = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [genreFilter, setGenreFilter] = useState([]);
 
-  const { data: booksData, loading: booksLoading } = useQuery(GET_BOOKS, {
+  const {
+    data: booksData,
+    loading: booksLoading,
+    subscribeToMore,
+  } = useQuery(GET_BOOKS, {
     variables: genreFilter.length > 0 ? { genres: genreFilter } : null,
   });
   const { data: genreListData, loading: genreListLoading } =
     useQuery(GET_GENRE_LIST);
+
+  // useEffect(() => {
+  //   subscribeToMore({
+  //     document: BOOK_ADDED,
+  //     updateQuery: (prev, data) => {
+  //       return {
+  //         allBooks: [...prev.allBooks, data.subscriptionData.data.bookAdded],
+  //       };
+  //     },
+  //   });
+  // }, []);
 
   if (booksLoading || genreListLoading) return <div>loading..</div>;
 
@@ -143,8 +158,8 @@ export const Books = () => {
       return;
     }
 
-    const genres = selectedOptions.map((option) => option.value);
-    setGenreFilter(genres);
+    const sortedGenres = selectedOptions.map((option) => option.value).sort();
+    setGenreFilter(sortedGenres);
   };
 
   const handleClearFilter = () => {

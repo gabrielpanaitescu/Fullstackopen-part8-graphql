@@ -5,6 +5,7 @@ export const BookList = ({ books }) => (
         <th></th>
         <th>author</th>
         <th>published</th>
+        <th>genres</th>
       </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@ export const BookList = ({ books }) => (
             <td>{book.title}</td>
             <td>{book.author.name}</td>
             <td>{book.published}</td>
+            <td>{book.genres.join(", ")}</td>
           </tr>
         );
       })}

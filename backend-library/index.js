@@ -16,7 +16,6 @@ import { PubSub } from "graphql-subscriptions";
 import { loaders } from "./libs/loaders.js";
 
 mongoose.set("strictQuery", false);
-mongoose.set("debug", true);
 mongoose.connect(MONGODB_URI).then(() => console.log("Connected to MongoDB"));
 
 export const pubsub = new PubSub();

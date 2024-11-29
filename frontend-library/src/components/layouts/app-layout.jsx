@@ -1,8 +1,10 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { NavLink, useNavigate, useNavigation } from "react-router-dom";
-import { CURRENT_USER } from "../../gql/queries";
+import { BOOK_ADDED, CURRENT_USER, GET_BOOKS } from "../../gql/queries";
 import { useEffect, useState } from "react";
 import { Notification } from "../ui/notification";
+import { useNotificationDispatch } from "../../contexts/notification";
+import { updateAllBooksCache } from "../../utils/update-cache";
 
 const navigation = [
   {
@@ -74,6 +76,20 @@ export const AppLayout = ({ children }) => {
   const { data, client } = useQuery(CURRENT_USER, {
     fetchPolicy: "cache-and-network",
   });
+  const notify = useNotificationDispatch();
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ client, data }) => {
+      const newBook = data.data.bookAdded;
+      notify({
+        message: `A new book has been added: '${newBook.title}''`,
+        type: "info",
+      });
+
+      updateAllBooksCache(client.cache, newBook);
+    },
+  });
+
   const navigate = useNavigate();
 
   const user = data?.me;
