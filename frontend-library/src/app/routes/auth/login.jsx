@@ -31,7 +31,7 @@ export const Login = () => {
         notify({
           message: `Log in successful`,
         });
-        localStorage.setItem("loggedUser", result.login.value);
+        localStorage.setItem("loggedUserLibraryAppGraphQL", result.login.value);
         navigate("/app");
       },
     });

@@ -21,7 +21,7 @@ const wsLink = new GraphQLWsLink(
 );
 
 const authLink = setContext((operation, prevContext) => {
-  const token = localStorage.getItem("loggedUser");
+  const token = localStorage.getItem("loggedUserLibraryAppGraphQL");
 
   if (operation.operationName === "Login") return;
 
